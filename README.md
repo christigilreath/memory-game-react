@@ -1,0 +1,1 @@
+This is a project created in React. The purpose is to practice the useEffect hook. The app fetches images from the pokemon api and creates a game that keeps score of how many images you can click without repeating the same image.
