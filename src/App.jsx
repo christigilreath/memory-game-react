@@ -10,50 +10,8 @@ function App() {
   const [currentScore, setCurrentScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [pokemons, setPokemons] = useState([]);
-  const [imageUrls, setImageUrls] = useState([]);
+  const [imageData, setImageData] = useState([]);
 
-  //   const pokemonNames = [
-  //     "bulbasaur",
-  //     "ivysaur",
-  //     "venusaur",
-  //     "charmander",
-  //     "charmeleon",
-  //     "charizard",
-  //     "squirtle",
-  //     "wartortle",
-  //     "blastoise",
-  //     "caterpie",
-  //     "metapod",
-  //     "butterfree",
-  //     "weedle",
-  //     "kakuna",
-  //     "beedrill",
-  //     "pidgey",
-  //     "rattata",
-  //     "fearow",
-  //     "pikachu",
-  //     "sandshrew",
-  //     "clefairy",
-  //     "jigglypuff",
-  //     "paras",
-  //     "meowth",
-  //     "psyduck",
-  //     "persian",
-  //     "mankey",
-  //     "ditto",
-  //     "poliwag",
-  //     "abra",
-  //     "kadabra",
-  //     "alakazam",
-  //     "machop",
-  //     "graveler",
-  //     "ponyta",
-  //     "slowpoke",
-  //     "magneton",
-  //     "doduo",
-  //     "seel",
-  //     "grimer",
-  //   ];
   useEffect(() => {
     console.log("fetch pokemons");
     let ignore = false;
@@ -74,7 +32,7 @@ function App() {
       ignore = true;
     };
   }, []);
-  console.log(pokemons[0]);
+
   useEffect(() => {
     if (pokemons.length === 0) {
       console.log("no pokemons yet");
@@ -82,13 +40,12 @@ function App() {
     }
     console.log("image fetch effect");
     let ignore = false;
-    const test = pokemons.map(async (pokemon) => {
-      //   console.log(pokemon);
+    const newArray = pokemons.map(async (pokemon) => {
       const response = await fetch(pokemon.url);
       const json = await response.json();
-      //   console.log(json);
+
       if (!ignore) {
-        setImageUrls((prev) => {
+        setImageData((prev) => {
           return [
             ...prev,
             {
@@ -105,14 +62,13 @@ function App() {
     };
   }, [pokemons]);
 
-  console.log(imageUrls);
   return (
     <>
       <header>
         <ScoreBoard />
       </header>
       <section>
-        <GameBoard />
+        <GameBoard imageData={imageData} setImageData={setImageData} />
       </section>
     </>
   );
