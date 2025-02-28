@@ -1,8 +1,35 @@
+import { useRef } from "react";
 import ImageCard from "./ImageCard.jsx";
-function GameBoard({ imageData, setImageData }) {
-  function cardClick() {
-    //check if card was clicked already and if it was check high score update scores (either to 0 or highscore)
-    //if score reset to zero clear cache of clicked cards
+
+function GameBoard({
+  imageData,
+  setImageData,
+  setCurrentScore,
+  highScore,
+  setHighScore,
+}) {
+  const clickedSetRef = useRef(new Set());
+
+  function handleCardClick(e) {
+    let pokemonTarget;
+    e.target === "figure"
+      ? (pokemonTarget = e.target.id)
+      : (pokemonTarget = e.target.parentElement.id);
+    //set scores
+    if (clickedSetRef.current.has(pokemonTarget)) {
+      alert("Already caught this pokemon! Start game over.");
+      setCurrentScore(0);
+      clickedSetRef.current = new Set();
+    } else {
+      clickedSetRef.current.add(pokemonTarget);
+      setCurrentScore((prev) => {
+        const newScore = prev + 1;
+        if (newScore > highScore) {
+          setHighScore(newScore);
+        }
+        return (prev = newScore);
+      });
+    }
     //shuffle cards
     const newArray = [...imageData];
     function shuffleArray(array) {
@@ -15,13 +42,14 @@ function GameBoard({ imageData, setImageData }) {
     setImageData(newArray);
   }
   return (
-    <div>
+    <div className="gameboard">
       {imageData.map((data) => (
         <ImageCard
           key={data.name}
+          id={data.id}
           name={data.name}
           src={data.imgUrl}
-          onClick={cardClick}
+          onClick={handleCardClick}
         />
       ))}
     </div>

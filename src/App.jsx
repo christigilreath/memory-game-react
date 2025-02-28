@@ -1,26 +1,28 @@
-import { useState, useEffect, useMemo } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-// import './App.css'
+import { useState, useEffect } from "react";
 import ScoreBoard from "./components/ScoreBoard.jsx";
 import GameBoard from "./components/GameBoard.jsx";
+import "./App.css";
 
 function App() {
-  const URL = "https://pokeapi.co/api/v2/pokemon/?offset=0&limit=5";
+  const URL = "https://pokeapi.co/api/v2/pokemon/?offset=0&limit=50";
   const [currentScore, setCurrentScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [pokemons, setPokemons] = useState([]);
   const [imageData, setImageData] = useState([]);
 
   useEffect(() => {
-    console.log("fetch pokemons");
     let ignore = false;
 
     async function fetchPokemon() {
-      const response = await fetch(URL);
-
-      const json = await response.json();
-      if (!ignore) {
+      let json;
+      try {
+        const response = await fetch(URL);
+        json = await response.json();
+      } catch (error) {
+        console.error(error);
+        alert("Something went wrong. Try refreshing the page.");
+      }
+      if (!ignore && json) {
         setPokemons((prev) => {
           return [...prev, ...json.results];
         });
@@ -34,21 +36,29 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (pokemons.length === 0) {
-      console.log("no pokemons yet");
-      return;
-    }
-    console.log("image fetch effect");
     let ignore = false;
-    const newArray = pokemons.map(async (pokemon) => {
-      const response = await fetch(pokemon.url);
-      const json = await response.json();
+    if (pokemons.length === 0) {
+      return () => {
+        ignore = false;
+      };
+    }
 
-      if (!ignore) {
+    const newArray = pokemons.map(async (pokemon) => {
+      let json;
+      try {
+        const response = await fetch(pokemon.url);
+        json = await response.json();
+      } catch (error) {
+        console.error(error);
+        alert("Something went wrong. Try refreshing the page.");
+      }
+
+      if (!ignore && json) {
         setImageData((prev) => {
           return [
             ...prev,
             {
+              id: pokemon.name,
               name: pokemon.name,
               imgUrl: json.sprites.other["official-artwork"].front_default,
             },
@@ -65,10 +75,20 @@ function App() {
   return (
     <>
       <header>
-        <ScoreBoard />
+        <h1>Catch All The Pokemon Memory Game</h1>
+        <div>
+          <p>See how many pokemon you can catch without repeating.</p>
+          <ScoreBoard currentScore={currentScore} highScore={highScore} />
+        </div>
       </header>
       <section>
-        <GameBoard imageData={imageData} setImageData={setImageData} />
+        <GameBoard
+          imageData={imageData}
+          setImageData={setImageData}
+          setCurrentScore={setCurrentScore}
+          highScore={highScore}
+          setHighScore={setHighScore}
+        />
       </section>
     </>
   );

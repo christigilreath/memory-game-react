@@ -1,10 +1,11 @@
-function ImageCard({ src, name, onClick }) {
-  console.log("from imagecard: ", name, src);
+function ImageCard({ src, name, onClick, id }) {
+  name = name.charAt(0).toUpperCase() + name.slice(1);
+
   return (
-    <div onClick={onClick}>
+    <figure id={id} onClick={onClick}>
       <img src={src} alt="name" />
-      <p>{name}</p>
-    </div>
+      <figcaption>{name}</figcaption>
+    </figure>
   );
 }
 
